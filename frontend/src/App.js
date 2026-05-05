@@ -126,7 +126,7 @@ const styles = `
 export default function App() {
   const [page, setPage] = useState("login");
   const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
+  const [, setUser] = useState(null);
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -163,7 +163,7 @@ export default function App() {
     setLoading(false);
   }, [token, api]);
 
-  useEffect(() => { if (token) { load(); setPage("dashboard"); } }, [token]);
+useEffect(() => { if (token) { load(); setPage("dashboard"); } }, [token, load]);
 
   // ── Auth ─────────────────────────────────────────────────────
   const AuthPage = ({ mode }) => {
