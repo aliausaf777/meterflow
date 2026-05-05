@@ -27,7 +27,10 @@ def get_db():
     finally:
         db.close()
 
-mongo_client = AsyncIOMotorClient(settings.MONGO_URL)
+mongo_client = AsyncIOMotorClient(
+    settings.MONGO_URL,
+    tlsAllowInvalidCertificates=True
+)
 mongo_db = mongo_client[settings.MONGO_DB]
 usage_logs = mongo_db["usage_logs"]
 
