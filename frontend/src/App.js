@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
-const API_BASE = "https://meterflow-backend-vami.onrender.com";
+const API_BASE = "http://127.0.0.1:8000";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Syne:wght@400;500;600&display=swap');
@@ -148,15 +148,31 @@ export default function App() {
     setLoading(true);
     try {
       const [invoice, usage, apis] = await Promise.all([
-        api("GET", "/billing/invoice?plan=free"),
-        api("GET", "/billing/usage?days=7"),
-        api("GET", "/apis/")
-      ]);
-      const keys = apis.length > 0
-        ? await api("GET", `/apis/${apis[0].id}/keys`)
-        : [];
-      const gateway = await api("GET", "/gateway/my-usage");
-      setData({ invoice, usage, apis, keys, gateway });
+  api("GET", "/billing/invoice?plan=free"),
+  api("GET", "/billing/usage?days=7"),
+  api("GET", "/apis/")
+]);
+
+let allKeys = [];
+
+for (const apiItem of apis) {
+  try {
+    const apiKeys = await api("GET", `/apis/${apiItem.id}/keys`);
+    allKeys = [...allKeys, ...apiKeys];
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+const gateway = await api("GET", "/gateway/my-usage");
+
+setData({
+  invoice,
+  usage,
+  apis,
+  keys: allKeys,
+  gateway
+});
     } catch (e) {
       console.error(e);
     }
@@ -292,10 +308,12 @@ useEffect(() => { if (token) { load(); setPage("dashboard"); } }, [token, load])
             Use this URL to route API calls through MeterFlow:
           </div>
           <div className="gateway-url">
-            {data.keys?.[0]
-              ? `http://127.0.0.1:8000/gateway/${data.keys[0].key_value}/your-endpoint`
-              : "Generate an API key first in the APIs section"}
-          </div>
+  {data.keys?.find(k => k.status === "active")
+    ? `http://127.0.0.1:8000/gateway/${
+        data.keys.find(k => k.status === "active").key_value
+      }/your-endpoint`
+    : "Generate an API key first in the APIs section"}
+</div>
         </div>
       </>
     );
