@@ -58,6 +58,10 @@ http://127.0.0.1:8000/docs
 * Track analytics
 * Billing dashboard
 
+## cerdentials
+user mail: mohdausafali786@gmail.com
+password: 0000
+
 ## Author
 
-Mohammed Ahmad Ali
+Mohammed Azhad Ali Ausaf
